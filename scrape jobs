@@ -1,0 +1,94 @@
+# go the job website presson F12; select Network, then select Fetch/XHR
+# the headers, payload, get/post method need to be changed accordingly based on the job website
+
+import requests
+import csv
+import uuid
+import time
+
+# find python related jobs
+KEYWORD = "Python"
+
+# api url
+url = "https://api.mycareersfuture.gov.sg/v2/search"
+
+all_jobs = []
+page = 0
+
+# request header
+headers = {
+    "Content-Type": "application/json",
+    "Accept": "*/*",
+    "Mcf-Client": "jobseeker",
+    "Origin": "https://www.mycareersfuture.gov.sg",
+    "Referer": "https://www.mycareersfuture.gov.sg/",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+}
+
+# request payload
+session_id = str(uuid.uuid4())
+
+payload = {
+    "search": KEYWORD,
+    "page": page,
+    "limit": 20,
+    "sessionId": session_id,
+    "sortBy": ["new_posting_date"]
+}
+
+while True:
+    try:
+        payload["page"] = page
+
+        # send a POST request
+        response = requests.post(url, json=payload, headers=headers)
+        
+        # Check if response is successful
+        if response.status_code != 200:
+            print(f"Error: Received status code {response.status_code}")
+            print(f"Response content: {response.text[:200]}...")  # Print first 200 chars
+            break
+            
+        # Try to parse JSON response
+        data = response.json()
+
+        total = data.get("total", 0) # total # of returned jobs
+        jobs = data.get("results", []) # list of jobs on this page
+        print(f"Fetched page {page}, new page: {len(jobs)}")
+        all_jobs.extend(jobs)
+        
+
+        if len(all_jobs) >= total:
+            all_jobs = all_jobs[:total] # The API fills the last page up to the limit of 20 even when fewer results remain, padding it with results already seen on earlier pages. 
+            break
+
+        page = page + 1
+        
+        
+        # Add a small delay between requests to avoid rate limiting
+        time.sleep(1)
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        break
+    except ValueError as e:
+        print(f"JSON decode error: {e}")
+        print(f"Response content: {response.text[:200]}...")  # Print first 200 chars
+        break
+
+
+with open("python_jobs.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["Job Title", "Company", "Min Salary", "Max Salary", "Job Link"])
+
+    for job in all_jobs:
+        title = job.get("title")
+        company = job.get("postedCompany", {}).get("name")
+        max_salary = job.get("salary", {}).get("maximum")
+        min_salary = job.get("salary", {}).get("minimum")
+        uuid = job.get("uuid")
+        link = f"https://www.mycareersfuture.gov.sg/job/{uuid}"
+
+        writer.writerow([title, company, min_salary, max_salary, link])
+
+print("Python job listings saved to python_jobs.csv")
