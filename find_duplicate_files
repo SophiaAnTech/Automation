@@ -1,0 +1,59 @@
+import os
+import hashlib
+from collections import defaultdict
+
+# List of folders to scan
+FOLDER_PATHS = [
+    "/Users/ax/Documents",
+    "/Users/ax/Downloads"
+]
+
+def file_hash(filepath, chunk_size=8192):
+    hasher = hashlib.md5()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(chunk_size):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+# Step 1: First collect all files and their sizes across all directories
+size_map = defaultdict(list)
+for FOLDER_PATH in FOLDER_PATHS:
+    for root, dirs, files in os.walk(FOLDER_PATH):
+
+        # ignore hidden dir and google drive dir
+        # dirs[:] = [d for d in dirs if not d.startswith(".") and not d.endswith("Google Drive")]
+
+        for name in files:
+            if name.startswith("."):
+                continue
+            filepath = os.path.join(root, name)
+            try:
+                size = os.path.getsize(filepath)
+                size_map[size].append(filepath)
+            except Exception as e:
+                print(f"Error getting size of {filepath}: {e}")
+                continue
+
+# Step 2: For files of the same size, calculate hashes and find duplicates
+duplicates_found = False
+hash_map = {}
+
+for size, files_same_size in size_map.items():
+    if len(files_same_size) < 2:
+        continue
+    
+    for filepath in files_same_size:
+        try:
+            h = file_hash(filepath)
+            if h in hash_map:
+                duplicates_found = True
+                print(f"Duplicate found:\n  {filepath}\n  {hash_map[h]}\n")
+            else:
+                hash_map[h] = filepath
+        except Exception as e:
+            print(f"Error hashing {filepath}: {e}")
+            continue
+
+if not duplicates_found:
+    print("No duplicates found.")
+print("Duplicate scan completed.")
