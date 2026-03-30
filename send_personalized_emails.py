@@ -3,12 +3,14 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-df = pd.read_excel("/content/grades.xlsx")
+df = pd.read_excel("/content/grades.xlsx") # replace this with your excel file
 df['subject'] = "Your grade report - " + df['student_name']
 df['body'] = "Dear " + df['student_name']+",\n\nYour grade is: "+df['grade']+"\n\nBest regards,\nSophia"
 
-send_email = "purple.an@gmail.com"
-send_password="vifp ejml evym yizt"
+# replace this with your email
+send_email = "abc.def@gmail.com"
+# replace this with your own google app password, follow this link to create one https://support.google.com/accounts/answer/185833?hl=en 
+send_password="vifp ejll evvm yyyy" #this app password is already evoked,
 
 server = smtplib.SMTP("smtp.gmail.com", 587)
 server.starttls()
