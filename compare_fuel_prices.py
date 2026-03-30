@@ -10,7 +10,7 @@ HEADERS = {
     "Accept-Language": "en-US,en;q=0.9",
 }
 
-
+# modify this based on how the fuel price is displayed on the website you are using
 def get_ron95_prices():
     response = requests.get(URL, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
