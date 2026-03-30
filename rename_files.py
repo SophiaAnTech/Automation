@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-FOLDER     = Path("/Users/ax/Downloads/Project Y")
+FOLDER     = Path("/Users/abc/Project Y")
 PREFIX     = "Project Y"
 # you can choose to rename only one type of files, or all files
 EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".heic"}
