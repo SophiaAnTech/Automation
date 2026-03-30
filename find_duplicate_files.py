@@ -4,8 +4,8 @@ from collections import defaultdict
 
 # List of folders to scan
 FOLDER_PATHS = [
-    "/Users/ax/Documents",
-    "/Users/ax/Downloads"
+    "/Users/abc/Documents",
+    "/Users/abc/Downloads"
 ]
 
 def file_hash(filepath, chunk_size=8192):
@@ -24,7 +24,7 @@ for FOLDER_PATH in FOLDER_PATHS:
         # dirs[:] = [d for d in dirs if not d.startswith(".") and not d.endswith("Google Drive")]
 
         for name in files:
-            if name.startswith("."):
+            if name.startswith("."): # ignore hidden files
                 continue
             filepath = os.path.join(root, name)
             try:
