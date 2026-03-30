@@ -9,13 +9,13 @@ import time
 # find python related jobs
 KEYWORD = "Python"
 
-# api url
+# api url - replace this with the job portal you use
 url = "https://api.mycareersfuture.gov.sg/v2/search"
 
 all_jobs = []
 page = 0
 
-# request header
+# request header - modify based on the job portal you use
 headers = {
     "Content-Type": "application/json",
     "Accept": "*/*",
@@ -28,6 +28,7 @@ headers = {
 # request payload
 session_id = str(uuid.uuid4())
 
+# modify based on the job portal you use
 payload = {
     "search": KEYWORD,
     "page": page,
