@@ -6,7 +6,7 @@ from datetime import datetime
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key='AIzaSyAjdvWK48Tlpobvex6SiwaMh2-Dp9vuYJw')
+genai.configure(api_key='xxxxxxx') #replace this with your api key
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 # RSS feeds
